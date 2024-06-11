@@ -27,15 +27,21 @@ function App() {
   const [getQuotes, setGetQuotes] = useState([]);
   const [showQuoteList, setShowQuoteList] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState("");
 
   const handleClick = async () => {
     setIsLoading(true);
+    setError("");
     const quotesData = await fetchQuotes();
     setQuotes(quotesData);
     setIsLoading(false);
   };
 
   const handleBookMark = () => {
+    if (bookmarkedQuotes.includes(quotes[0])) {
+      setError("This quote is already in the quote list");
+      return;
+    }
     const updatedBookmarks = [...bookmarkedQuotes, quotes[0]];
     setBookmarkedQuotes(updatedBookmarks);
     localStorage.setItem("quotes", JSON.stringify(updatedBookmarks));
@@ -57,8 +63,9 @@ function App() {
   };
   useEffect(() => {
     const storedBookmarks = JSON.parse(localStorage.getItem("quotes")) || [];
+    setBookmarkedQuotes(storedBookmarks);
     setGetQuotes(storedBookmarks);
-  }, [bookmarkedQuotes]);
+  }, [bookmarkedQuotes, getQuotes]);
 
   useEffect(() => {
     const getQuotes = async () => {
@@ -121,6 +128,9 @@ function App() {
               <p className="font-serif text-3xl text-gray-700">{quotes[0]}</p>
             )}
             <div className="flex flex-row justify-end gap-2">
+              {error && (
+                <p className="font-serif text-xl text-red-600">{error}</p>
+              )}
               <button onClick={handleBookMark}>
                 <CiBookmarkPlus className="text-xl" />
               </button>
