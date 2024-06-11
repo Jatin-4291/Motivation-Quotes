@@ -26,10 +26,13 @@ function App() {
   const [bookmarkedQuotes, setBookmarkedQuotes] = useState([]);
   const [getQuotes, setGetQuotes] = useState([]);
   const [showQuoteList, setShowQuoteList] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleClick = async () => {
+    setIsLoading(true);
     const quotesData = await fetchQuotes();
     setQuotes(quotesData);
+    setIsLoading(false);
   };
 
   const handleBookMark = () => {
@@ -59,8 +62,10 @@ function App() {
 
   useEffect(() => {
     const getQuotes = async () => {
+      setIsLoading(true);
       const quotesData = await fetchQuotes();
       setQuotes(quotesData);
+      setIsLoading(false);
     };
     getQuotes();
   }, []);
@@ -110,7 +115,11 @@ function App() {
         </div>
         <div className="h-4/5 flex gap-3">
           <div className="w-full mt-10 h-84 flex flex-col justify-between border border-gray-300 rounded-lg p-4">
-            <p className="font-serif text-3xl text-gray-700">{quotes[0]}</p>
+            {isLoading ? (
+              <p className="font-serif text-3xl text-gray-700">Loading...</p>
+            ) : (
+              <p className="font-serif text-3xl text-gray-700">{quotes[0]}</p>
+            )}
             <div className="flex flex-row justify-end gap-2">
               <button onClick={handleBookMark}>
                 <CiBookmarkPlus className="text-xl" />
